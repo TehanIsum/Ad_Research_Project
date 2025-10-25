@@ -1,0 +1,75 @@
+# .gitignore for AdResearch project
+# Generated to ignore common Python, macOS, editor, virtualenv, and ML model artifacts
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# Pytest cache
+.pytest_cache/
+
+# IPython/Jupyter
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDEs
+.idea/
+
+# Logs and runtime files
+logs/
+logs/*.csv
+
+# Environment variables / secrets
+.env
+.env.*
+*.secret
+
+# TensorFlow / ML model artifacts (large files)
+models/
+models/*.h5
+models/*.pb
+saved_model/
+checkpoint
+*.ckpt
+
+# Keras cache
+.keras/
+
+# Wheels
+*.whl
+
+# C extensions
+*.so
+
+# System files
+Thumbs.db
+
+# Local sqlite databases
+*.db
+
+# Optional: exclude pip cache
+pip-cache/
+
+# Keep ads data tracked; remove this line if you want data ignored
+!data/ads.csv

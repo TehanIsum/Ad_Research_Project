@@ -1,0 +1,308 @@
+═══════════════════════════════════════════════════════════════════════
+  SYSTEM WORKFLOW & DATA FLOW DIAGRAM
+═══════════════════════════════════════════════════════════════════════
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        APPLICATION STARTUP                          │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │   Initialize Logs       │
+                    │   Create logs/ dir      │
+                    │   Init detections.csv   │
+                    └─────────────────────────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │  Load FaceEstimator     │
+                    │  - MTCNN detector       │
+                    │  - Age/Gender/Mood      │
+                    └─────────────────────────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │  Load AdRecommender     │
+                    │  - Read data/ads.csv    │
+                    │  - Load 16 sample ads   │
+                    └─────────────────────────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │   Open Webcam           │
+                    │   WebcamCapture(0)      │
+                    │   640x480 @ 30fps       │
+                    └─────────────────────────┘
+                                  │
+                                  ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                        MAIN DETECTION LOOP                          │
+│                     (Every 5 seconds)                               │
+└─────────────────────────────────────────────────────────────────────┘
+                                  │
+        ┌─────────────────────────┴─────────────────────────┐
+        ▼                                                     ▼
+┌───────────────┐                                   ┌───────────────┐
+│  Read Frame   │                                   │   Wait for    │
+│  from Camera  │                                   │   5 seconds   │
+└───────────────┘                                   └───────────────┘
+        │                                                     │
+        ▼                                                     │
+┌───────────────┐                                           │
+│ Detect Faces  │◄──────────────────────────────────────────┘
+│  (MTCNN)      │
+└───────────────┘
+        │
+        ├─── No face detected ───► Print "No face" ───┐
+        │                                              │
+        ▼                                              │
+┌───────────────┐                                     │
+│  Face Found!  │                                     │
+│  Get largest  │                                     │
+│  face bbox    │                                     │
+└───────────────┘                                     │
+        │                                              │
+        ▼                                              │
+┌───────────────────────────────────────────────┐    │
+│         DEMOGRAPHIC ESTIMATION                │    │
+│                                               │    │
+│  1. Crop face region                          │    │
+│  2. Predict age group:                        │    │
+│     → child (0-12)                            │    │
+│     → teen (13-19)                            │    │
+│     → young (20-34)                           │    │
+│     → adult (35-54)                           │    │
+│     → senior (55+)                            │    │
+│                                               │    │
+│  3. Predict gender:                           │    │
+│     → Male                                    │    │
+│     → Female                                  │    │
+│     → Unknown                                 │    │
+│                                               │    │
+│  4. Predict mood:                             │    │
+│     → happy                                   │    │
+│     → neutral                                 │    │
+│     → sad                                     │    │
+│                                               │    │
+│  Output: { age_group, gender, mood }          │    │
+└───────────────────────────────────────────────┘    │
+        │                                              │
+        ▼                                              │
+┌───────────────────────────────────────────────┐    │
+│         AD RECOMMENDATION ENGINE              │    │
+│                                               │    │
+│  For each ad in ads.csv:                      │    │
+│    score = 0                                  │    │
+│                                               │    │
+│    IF age_group matches:     score += 10     │    │
+│    IF target_age = "All":    score += 5      │    │
+│                                               │    │
+│    IF gender matches:        score += 10     │    │
+│    IF target_gender = "All": score += 5      │    │
+│                                               │    │
+│    IF mood matches:          score += 10     │    │
+│    IF target_mood = "All":   score += 5      │    │
+│                                               │    │
+│    score += priority (1-10)                   │    │
+│    score += random(0-3)  // serendipity       │    │
+│                                               │    │
+│  Select ad with HIGHEST score                 │    │
+└───────────────────────────────────────────────┘    │
+        │                                              │
+        ▼                                              │
+┌───────────────────────────────────────────────┐    │
+│         DISPLAY RESULTS                       │    │
+│                                               │    │
+│  Print to Terminal:                           │    │
+│  ═══════════════════════════════════          │    │
+│  Detection Event @ 2025-10-24 14:32:15        │    │
+│  ═══════════════════════════════════          │    │
+│                                               │    │
+│  Detected Demographics:                       │    │
+│    Age Group: young (20-34)                   │    │
+│    Gender: Male                               │    │
+│    Mood: happy                                │    │
+│                                               │    │
+│  Recommended Ad:                              │    │
+│    ID: AD_008                                 │    │
+│    Title: Premium Fitness Membership          │    │
+│    Description: Get fit with state-of-the-art │    │
+│    Target: young, Male, happy                 │    │
+│    Priority: 8                                │    │
+│  ═══════════════════════════════════          │    │
+└───────────────────────────────────────────────┘    │
+        │                                              │
+        ▼                                              │
+┌───────────────────────────────────────────────┐    │
+│         LOG TO CSV                            │    │
+│                                               │    │
+│  Append to logs/detections.csv:               │    │
+│                                               │    │
+│  timestamp,age_group,gender,mood,ad_id_shown  │    │
+│  2025-10-24 14:32:15,young,Male,happy,AD_008  │    │
+└───────────────────────────────────────────────┘    │
+        │                                              │
+        └──────────────────────────────────────────────┘
+                          │
+                          ▼
+                 ┌─────────────────┐
+                 │  Wait 5 seconds │
+                 │  Loop continues │
+                 └─────────────────┘
+                          │
+                          │ (Ctrl+C pressed)
+                          ▼
+                 ┌─────────────────┐
+                 │  Graceful Exit  │
+                 │  Release camera │
+                 │  Save logs      │
+                 │  Print summary  │
+                 └─────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════
+  DATA STRUCTURES
+═══════════════════════════════════════════════════════════════════════
+
+Detection Object:
+─────────────────
+{
+    'age_group': 'young',    // child|teen|young|adult|senior
+    'gender': 'Male',        // Male|Female|Unknown
+    'mood': 'happy'          // happy|neutral|sad
+}
+
+
+Ad Row (from ads.csv):
+──────────────────────
+{
+    'ad_id': 'AD_008',
+    'title': 'Premium Fitness Membership',
+    'description': 'Get fit with state-of-the-art gym facilities',
+    'target_age_groups': 'young',
+    'target_genders': 'Male',
+    'target_moods': 'happy',
+    'priority': 8,
+    'creative_url': 'https://example.com/ads/fitness.jpg'
+}
+
+
+Log Entry (detections.csv):
+───────────────────────────
+timestamp,age_group,gender,mood,ad_id_shown
+2025-10-24 14:32:15,young,Male,happy,AD_008
+
+
+═══════════════════════════════════════════════════════════════════════
+  MODULE INTERACTIONS
+═══════════════════════════════════════════════════════════════════════
+
+main.py
+  │
+  ├──► utils/capture.py
+  │     └──► WebcamCapture
+  │           └──► OpenCV (cv2.VideoCapture)
+  │
+  ├──► utils/models.py
+  │     └──► FaceEstimator
+  │           ├──► MTCNN (face detection)
+  │           ├──► predict_age()
+  │           ├──► predict_gender()
+  │           └──► predict_mood()
+  │
+  ├──► recommender.py
+  │     └──► AdRecommender
+  │           ├──► load_ads() → reads data/ads.csv
+  │           ├──► score_ad(detection, ad)
+  │           └──► recommend_ad(detection)
+  │
+  └──► Output
+        ├──► Terminal (print)
+        └──► logs/detections.csv
+
+
+═══════════════════════════════════════════════════════════════════════
+  SCORING ALGORITHM EXAMPLE
+═══════════════════════════════════════════════════════════════════════
+
+Detection: young (20-34), Male, happy
+
+Ad: Premium Fitness Membership
+  - target_age_groups: young
+  - target_genders: Male
+  - target_moods: happy
+  - priority: 8
+
+Score Calculation:
+  Age match (young = young):        +10
+  Gender match (Male = Male):       +10
+  Mood match (happy = happy):       +10
+  Priority:                         +8
+  Random (serendipity):             +2.3
+  ────────────────────────────────────
+  TOTAL SCORE:                      40.3
+
+
+Ad: Streaming Service Premium
+  - target_age_groups: young|adult|teen
+  - target_genders: All
+  - target_moods: happy|neutral
+  - priority: 8
+
+Score Calculation:
+  Age match (young in list):        +10
+  Gender match (All includes Male): +5
+  Mood match (happy in list):       +10
+  Priority:                         +8
+  Random (serendipity):             +1.7
+  ────────────────────────────────────
+  TOTAL SCORE:                      34.7
+
+→ First ad wins (40.3 > 34.7)
+
+
+═══════════════════════════════════════════════════════════════════════
+  ERROR HANDLING FLOW
+═══════════════════════════════════════════════════════════════════════
+
+┌────────────────┐
+│ Camera Check   │
+└────────────────┘
+        │
+        ├─── Camera found ────► Continue
+        │
+        └─── Camera not found ─► Print error message
+                                  Print troubleshooting tips
+                                  Exit with code 1
+
+┌────────────────┐
+│ Load ads.csv   │
+└────────────────┘
+        │
+        ├─── File exists ──────► Parse CSV
+        │                          │
+        │                          ├─── Valid format ──► Continue
+        │                          │
+        │                          └─── Invalid format ─► Print error
+        │                                                  Exit with code 1
+        │
+        └─── File not found ────► Print error
+                                   Print file path
+                                   Exit with code 1
+
+┌────────────────┐
+│ Face Detection │
+└────────────────┘
+        │
+        ├─── Face found ───────► Process
+        │
+        └─── No face ──────────► Print "No face detected"
+                                  Continue loop
+
+
+═══════════════════════════════════════════════════════════════════════
+This workflow diagram shows the complete system operation from
+startup to graceful shutdown. All components work together to provide
+real-time, privacy-focused ad recommendations based on detected
+demographics.
+═══════════════════════════════════════════════════════════════════════

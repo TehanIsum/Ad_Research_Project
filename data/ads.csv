@@ -1,0 +1,17 @@
+ad_id,title,description,target_age_groups,target_genders,target_moods,priority,creative_url
+AD_001,Kids Learning App,Fun educational games for children,child,All,happy,9,https://example.com/ads/kids_learning.jpg
+AD_002,Teen Fashion Store,Trendy outfits for teenagers,teen,All,happy|neutral,8,https://example.com/ads/teen_fashion.jpg
+AD_003,Gaming Headset Pro,Premium gaming gear for serious gamers,teen|young,Male,happy|neutral,7,https://example.com/ads/gaming_headset.jpg
+AD_004,Skincare Essentials,Gentle skincare for young adults,young,Female,neutral|happy,8,https://example.com/ads/skincare.jpg
+AD_005,Online MBA Program,Advance your career with flexible learning,adult|young,All,neutral,9,https://example.com/ads/mba_program.jpg
+AD_006,Luxury Sedan 2024,Experience ultimate comfort and style,adult|senior,Male,neutral|happy,8,https://example.com/ads/luxury_car.jpg
+AD_007,Home Security System,Protect what matters most,adult|senior,All,neutral|sad,10,https://example.com/ads/security.jpg
+AD_008,Premium Fitness Membership,Get fit with state-of-the-art gym facilities,young,Male,happy,8,https://example.com/ads/fitness.jpg
+AD_009,Spa & Wellness Package,Relax and rejuvenate yourself,young|adult,Female,neutral|sad,7,https://example.com/ads/spa.jpg
+AD_010,Retirement Planning Services,Secure your financial future,adult|senior,All,neutral,9,https://example.com/ads/retirement.jpg
+AD_011,Concert Tickets,Live music from your favorite artists,teen|young,All,happy,6,https://example.com/ads/concert.jpg
+AD_012,Comfort Shoes,Orthopedic shoes for all-day comfort,adult|senior,All,neutral,7,https://example.com/ads/comfort_shoes.jpg
+AD_013,Streaming Service Premium,Unlimited movies and shows,young|adult|teen,All,happy|neutral,8,https://example.com/ads/streaming.jpg
+AD_014,Travel Insurance,Worry-free travel protection,adult,All,neutral|sad,7,https://example.com/ads/travel_insurance.jpg
+AD_015,Energy Drink,Boost your energy instantly,young|teen,Male,neutral|happy,6,https://example.com/ads/energy_drink.jpg
+AD_016,Meditation App,Find peace and calm your mind,All,All,sad|neutral,8,https://example.com/ads/meditation.jpg

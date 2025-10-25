@@ -1,0 +1,86 @@
+AdResearch/ - Real-time Age/Gender/Mood-based Ad Recommendation System
+================================================================================
+
+PROJECT STRUCTURE:
+
+AdResearch/
+│
+├── main.py                     # Main application entry point - runs camera loop,
+│                               # detects faces every 5s, recommends ads, logs data
+│
+├── recommender.py              # Ad recommendation engine with scoring logic
+│                               # Matches detected demographics to ads.csv
+│
+├── utils/                      # Utility modules
+│   ├── __init__.py             # Package initializer
+│   ├── capture.py              # Webcam capture and frame handling
+│   ├── models.py               # FaceEstimator class - face detection, age, gender, mood
+│
+├── data/                       # Data storage
+│   └── ads.csv                 # Ad inventory with metadata (age, gender, mood, priority)
+│
+├── logs/                       # Runtime logs (created automatically)
+│   └── detections.csv          # Detection event log (timestamp, demographics, ad_shown)
+│
+├── requirements.txt            # Python dependencies
+│
+├── README.md                   # Setup instructions and usage guide
+│
+└── file_structure.txt          # This file - project structure documentation
+
+
+FILE ROLES:
+
+1. main.py
+   - Opens webcam using OpenCV
+   - Runs detection loop (every 5 seconds)
+   - Calls FaceEstimator to detect faces and predict demographics
+   - Calls recommender to get best-fit ad
+   - Logs detection events to logs/detections.csv
+   - Prints recommended ads to terminal
+   - Handles Ctrl+C graceful exit and camera errors
+
+2. recommender.py
+   - Loads ads.csv into memory
+   - score_ad(detection, ad_row): calculates match score
+     * Age group match (exact match or range overlap)
+     * Gender match (exact or 'All' targets)
+     * Mood match (exact or 'All' moods)
+     * Priority weighting
+     * Small random factor for serendipity
+   - recommend_ad(detection): returns best scoring ad
+
+3. utils/capture.py
+   - WebcamCapture class
+   - Opens/closes video capture
+   - Provides frame reading with error handling
+   - Checks camera availability
+
+4. utils/models.py
+   - FaceEstimator class using MTCNN and TensorFlow
+   - detect_faces(frame): returns bounding boxes
+   - predict_age(face_image): returns age group label
+   - predict_gender(face_image): returns Male/Female/Unknown
+   - predict_mood(face_image): returns happy/neutral/sad
+   - Uses lightweight pretrained models from TensorFlow Hub
+   - Fallback to simple heuristic models if downloads fail
+
+5. data/ads.csv
+   - Sample ad inventory (12+ diverse ads)
+   - Columns: ad_id, title, description, target_age_groups, 
+     target_genders, target_moods, priority, creative_url
+
+6. logs/detections.csv
+   - Runtime log created automatically
+   - Columns: timestamp, age_group, gender, mood, ad_id_shown
+   - Used for analytics and model improvement
+
+
+DESIGN PRINCIPLES:
+
+✓ Modular - each component has single responsibility
+✓ Simple - uses pretrained models, no custom training required
+✓ Privacy-first - no frame storage, only metadata logged
+✓ Extensible - easy to swap models or improve scoring logic
+✓ Robust - handles camera errors, missing models, edge cases
+✓ macOS compatible - tested on macOS with system camera

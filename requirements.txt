@@ -1,0 +1,20 @@
+# Real-time Age/Gender/Mood-based Ad Recommendation System
+# Dependencies for Python 3.10+
+
+# Core computer vision and image processing
+opencv-python==4.8.1.78
+Pillow==10.1.0
+
+# Deep learning framework
+tensorflow==2.14.0
+# Alternative for M1/M2 Macs: tensorflow-macos==2.14.0
+
+# Face detection
+mtcnn==0.1.1
+
+# Data handling
+pandas==2.1.3
+numpy==1.26.2
+
+# Additional utilities
+python-dateutil==2.8.2
