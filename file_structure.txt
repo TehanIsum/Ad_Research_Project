@@ -12,7 +12,6 @@ AdResearch/
 │                               # Matches detected demographics to ads.csv
 │
 ├── utils/                      # Utility modules
-│   ├── __init__.py             # Package initializer
 │   ├── capture.py              # Webcam capture and frame handling
 │   ├── models.py               # FaceEstimator class - face detection, age, gender, mood
 │

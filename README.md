@@ -27,7 +27,7 @@ A minimal, local prototype that uses webcam, face detection, and demographic est
 ### 1. Clone or navigate to project directory
 
 ```bash
-cd /Users/tehanisum/Documents/AdResearch
+cd /some path
 ```
 
 ### 2. Create virtual environment (recommended)

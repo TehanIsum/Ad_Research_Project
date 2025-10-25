@@ -1,5 +1,4 @@
 # .gitignore for AdResearch project
-# Generated to ignore common Python, macOS, editor, virtualenv, and ML model artifacts
 
 # Virtual environments
 venv/

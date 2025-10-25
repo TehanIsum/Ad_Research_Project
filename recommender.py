@@ -1,16 +1,5 @@
-"""
-Ad Recommendation Engine
-
-Matches detected demographic data (age, gender, mood) with ad inventory
-using a scoring algorithm that considers:
-- Target age group match
-- Target gender match
-- Target mood match
-- Ad priority
-- Randomness for serendipity
-
-The best-scoring ad is recommended to the user.
-"""
+#Ad Recommendation Engine
+#The best-scoring ad is recommended to the user.
 
 import pandas as pd
 import random
@@ -19,26 +8,14 @@ import os
 
 
 class AdRecommender:
-    """
-    Recommends ads based on detected demographic data.
-    
-    Uses a scoring function that matches user demographics with ad targeting
-    parameters and applies priority weighting.
-    """
     
     def __init__(self, ads_csv_path: str):
-        """
-        Initialize the recommender with ad inventory.
-        
-        Args:
-            ads_csv_path: Path to the ads CSV file
-        """
         self.ads_csv_path = ads_csv_path
         self.ads_df = None
         self.load_ads()
     
     def load_ads(self):
-        """Load ad inventory from CSV file."""
+        #Load ad inventory from CSV file.
         try:
             if not os.path.exists(self.ads_csv_path):
                 raise FileNotFoundError(f"Ads CSV not found: {self.ads_csv_path}")
@@ -60,23 +37,7 @@ class AdRecommender:
             self.ads_df = None
     
     def score_ad(self, detection: Dict[str, str], ad_row: pd.Series) -> float:
-        """
-        Calculate match score between detected demographics and ad targeting.
         
-        Scoring algorithm:
-        - Age match: +10 points if exact match, +5 if 'All' in targets
-        - Gender match: +10 points if exact match, +5 if 'All' in targets
-        - Mood match: +10 points if exact match, +5 if 'All' in targets
-        - Priority: +priority points (1-10)
-        - Randomness: +0 to +3 points for serendipity
-        
-        Args:
-            detection: Dictionary with 'age_group', 'gender', 'mood'
-            ad_row: Pandas Series representing one ad
-            
-        Returns:
-            Total score (float)
-        """
         score = 0.0
         
         # Extract detection data
@@ -123,15 +84,7 @@ class AdRecommender:
         return score
     
     def recommend_ad(self, detection: Dict[str, str]) -> Optional[pd.Series]:
-        """
-        Recommend the best-fit ad for detected demographics.
         
-        Args:
-            detection: Dictionary with 'age_group', 'gender', 'mood'
-            
-        Returns:
-            Pandas Series of the recommended ad, or None if no ads available
-        """
         if self.ads_df is None or len(self.ads_df) == 0:
             print("✗ No ads available for recommendation")
             return None
@@ -152,15 +105,7 @@ class AdRecommender:
         return best_ad
     
     def get_ad_summary(self, ad: pd.Series) -> Dict[str, str]:
-        """
-        Get a formatted summary of an ad for display.
         
-        Args:
-            ad: Pandas Series representing an ad
-            
-        Returns:
-            Dictionary with formatted ad information
-        """
         return {
             'ad_id': str(ad['ad_id']),
             'title': str(ad['title']),

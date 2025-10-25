@@ -1,18 +1,6 @@
-"""
-Real-time Age/Gender/Mood-based Ad Recommendation System
+#Real-time Age/Gender/Mood-based Ad Recommendation System
+#Stop with Ctrl+C for graceful exit.
 
-Main application that:
-1. Opens webcam and captures frames
-2. Every 5 seconds, detects face and predicts demographics
-3. Recommends best-fit ad based on demographics
-4. Logs detection events to CSV
-5. Displays recommendations in terminal
-
-Usage:
-    python main.py
-
-Stop with Ctrl+C for graceful exit.
-"""
 
 import cv2
 import time
@@ -34,7 +22,7 @@ SHOW_CAMERA_WINDOW = True  # Set to True to show live camera feed with overlays
 
 
 def initialize_logs():
-    """Create logs directory and initialize detections CSV if needed."""
+    #Create logs directory and initialize detections CSV if needed.
     # Create logs directory
     if not os.path.exists(LOGS_DIR):
         os.makedirs(LOGS_DIR)
@@ -48,13 +36,6 @@ def initialize_logs():
 
 
 def log_detection(detection: dict, ad_id: str):
-    """
-    Log a detection event to CSV.
-    
-    Args:
-        detection: Dictionary with age_group, gender, mood
-        ad_id: ID of the recommended ad
-    """
     try:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
@@ -75,13 +56,6 @@ def log_detection(detection: dict, ad_id: str):
 
 
 def print_detection_result(detection: dict, ad: pd.Series):
-    """
-    Print formatted detection and recommendation to terminal.
-    
-    Args:
-        detection: Dictionary with demographic data
-        ad: Pandas Series with ad information
-    """
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     
     print("\n" + "=" * 65)
@@ -104,18 +78,6 @@ def print_detection_result(detection: dict, ad: pd.Series):
 
 
 def draw_detection_overlay(frame, detection: dict, ad: pd.Series, face_box=None):
-    """
-    Draw detection results and ad recommendation on the frame.
-    
-    Args:
-        frame: The video frame to draw on
-        detection: Dictionary with demographic data
-        ad: Pandas Series with ad information
-        face_box: Face bounding box [x, y, width, height] (optional)
-    
-    Returns:
-        Frame with overlays
-    """
     overlay = frame.copy()
     h, w = frame.shape[:2]
     
@@ -165,16 +127,6 @@ def draw_detection_overlay(frame, detection: dict, ad: pd.Series, face_box=None)
 
 
 def draw_waiting_overlay(frame, next_detection_in: float):
-    """
-    Draw overlay when waiting for next detection.
-    
-    Args:
-        frame: The video frame to draw on
-        next_detection_in: Seconds until next detection
-    
-    Returns:
-        Frame with overlay
-    """
     h, w = frame.shape[:2]
     
     # Add status text
@@ -202,6 +154,7 @@ def main():
         print("\nTroubleshooting:")
         print("  1. Check that your camera is connected")
         print("  2. Ensure camera permissions are granted:")
+        print("     Windows: Settings → Privacy → Camera")
         print("     macOS: System Preferences → Security & Privacy → Privacy → Camera")
         print("  3. Close other apps using the camera (Zoom, Skype, etc.)")
         sys.exit(1)

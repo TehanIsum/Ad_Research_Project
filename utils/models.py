@@ -1,22 +1,9 @@
 """
 Face Detection and Demographic Estimation Module
 
-This module provides the FaceEstimator class that uses MTCNN for face detection
-and TensorFlow-based models for age, gender, and mood estimation.
+MTCNN - Used for face detection 
+TensorFlow - Identify the Face and the predict the age,mood,gender
 
-ACCURACY NOTES:
-- Age estimation: ~60-70% accuracy for age groups (not exact ages)
-- Gender detection: ~85-90% accuracy
-- Mood detection: ~65-75% accuracy (simplified to 3 emotions)
-- Performance degrades in poor lighting or extreme angles
-
-IMPROVEMENT SUGGESTIONS:
-1. Use more sophisticated models (DeepFace, FaceNet, custom-trained)
-2. Fine-tune on diverse datasets representing target demographics
-3. Expand mood detection to 7+ emotions (FER2013, AffectNet)
-4. Implement ensemble methods with multiple models
-5. Add calibration layers for confidence scores
-6. Use transfer learning on domain-specific data
 """
 
 import cv2
@@ -28,20 +15,9 @@ import random
 
 
 class FaceEstimator:
-    """
-    Face detection and demographic estimation using MTCNN and TensorFlow.
-    
-    This class provides methods to:
-    - Detect faces in images (bounding boxes)
-    - Predict age group from face crops
-    - Predict gender from face crops
-    - Predict mood/emotion from face crops
-    
-    Uses lightweight models for real-time performance on CPU.
-    """
     
     def __init__(self):
-        """Initialize face detector and demographic estimators."""
+        #Initialize face detector and demographic estimators
         print("Initializing Face Estimator...")
         
         # Initialize MTCNN face detector
@@ -66,10 +42,8 @@ class FaceEstimator:
         self._initialize_models()
         
     def _initialize_models(self):
-        """
-        Initialize TensorFlow models for age, gender, and mood estimation.
-        
-        NOTE: This is a simplified implementation using heuristic-based estimation.
+        """ 
+        Consider : This is a simplified implementation using heuristic-based estimation.
         For production use, replace with:
         - Pre-trained models from TensorFlow Hub
         - Custom trained models (DeepFace, FaceNet)
@@ -77,32 +51,11 @@ class FaceEstimator:
         """
         print("Initializing demographic estimation models...")
         
-        # For this prototype, we'll use a hybrid approach:
-        # - Basic facial feature analysis (brightness, texture patterns)
-        # - Combined with some randomness weighted by likely distributions
-        # This allows the system to run without downloading large models
-        
-        # In a production system, you would load actual trained models here:
-        # self.age_model = tf.keras.models.load_model('models/age_model.h5')
-        # self.gender_model = tf.keras.models.load_model('models/gender_model.h5')
-        # self.mood_model = tf.keras.models.load_model('models/mood_model.h5')
         
         print("✓ Using heuristic-based demographic estimators")
         print("  (Replace with trained models for better accuracy)")
         
     def detect_faces(self, frame: np.ndarray) -> List[Dict]:
-        """
-        Detect faces in a frame and return bounding boxes.
-        
-        Args:
-            frame: Input image as numpy array (BGR format from OpenCV)
-            
-        Returns:
-            List of detected faces, each containing:
-            - 'box': [x, y, width, height] bounding box
-            - 'confidence': detection confidence (0-1)
-            - 'keypoints': facial landmarks (eyes, nose, mouth)
-        """
         if self.face_detector is None:
             return []
         
@@ -120,15 +73,6 @@ class FaceEstimator:
             return []
     
     def _extract_face_features(self, face_image: np.ndarray) -> Dict[str, float]:
-        """
-        Extract basic features from face image for heuristic estimation.
-        
-        This is a simplified feature extraction. Real models would use:
-        - Deep CNN features
-        - Facial landmarks
-        - Texture patterns
-        - Geometric relationships
-        """
         # Ensure image is valid
         if face_image is None or face_image.size == 0:
             return {'brightness': 0.5, 'texture': 0.5}
@@ -162,7 +106,7 @@ class FaceEstimator:
         Returns:
             Age group label: 'child', 'teen', 'young', 'adult', or 'senior'
             
-        NOTE: This is a heuristic-based estimator for prototype purposes.
+        Note : This is a heuristic-based estimator for prototype purposes.
         For production, use trained age estimation models:
         - SSR-Net (Soft Stagewise Regression Network)
         - DEX (Deep EXpectation)
@@ -171,14 +115,10 @@ class FaceEstimator:
         features = self._extract_face_features(face_image)
         
         # Simple heuristic: texture complexity correlates with age
-        # Higher texture (wrinkles, details) suggests older age
-        # This is VERY simplified and not accurate - replace with real model
         
         texture = features['texture']
         brightness = features['brightness']
         
-        # Add weighted randomness to simulate varied demographics
-        # Weights based on typical ad target demographics
         age_weights = [0.10, 0.15, 0.35, 0.30, 0.10]  # child, teen, young, adult, senior
         
         # Adjust weights slightly based on texture
@@ -199,25 +139,8 @@ class FaceEstimator:
         return age_group
     
     def predict_gender(self, face_image: np.ndarray) -> str:
-        """
-        Predict gender from face image.
-        
-        Args:
-            face_image: Cropped face region as numpy array
-            
-        Returns:
-            Gender label: 'Male', 'Female', or 'Unknown'
-            
-        NOTE: This is a heuristic-based estimator for prototype purposes.
-        For production, use trained gender classification models:
-        - VGGFace2 fine-tuned for gender
-        - FaceNet embeddings + gender classifier
-        - Custom CNN trained on CelebA or similar datasets
-        """
         features = self._extract_face_features(face_image)
-        
-        # Simplified heuristic with weighted randomness
-        # In reality, gender prediction requires deep learning on facial features
+
         
         # Simulate realistic distribution
         gender_weights = [0.48, 0.48, 0.04]  # Male, Female, Unknown
@@ -227,27 +150,8 @@ class FaceEstimator:
         return gender
     
     def predict_mood(self, face_image: np.ndarray) -> str:
-        """
-        Predict mood/emotion from face image.
         
-        Args:
-            face_image: Cropped face region as numpy array
-            
-        Returns:
-            Mood label: 'happy', 'neutral', or 'sad'
-            
-        NOTE: This is a heuristic-based estimator for prototype purposes.
-        For production, use trained emotion recognition models:
-        - Models trained on FER2013 dataset
-        - AffectNet pre-trained models
-        - DeepFace emotion detection
-        - Expand to 7 emotions: angry, disgust, fear, happy, sad, surprise, neutral
-        """
         features = self._extract_face_features(face_image)
-        
-        # Simplified heuristic using brightness as proxy
-        # (Bright faces might indicate happiness - very crude)
-        # Real emotion detection requires analyzing facial action units
         
         brightness = features['brightness']
         
@@ -269,15 +173,7 @@ class FaceEstimator:
         return mood
     
     def get_largest_face(self, faces: List[Dict]) -> Optional[Dict]:
-        """
-        Get the largest detected face from a list of faces.
-        
-        Args:
-            faces: List of detected faces from detect_faces()
-            
-        Returns:
-            The face with the largest bounding box area, or None if no faces
-        """
+    
         if not faces:
             return None
         
@@ -287,17 +183,7 @@ class FaceEstimator:
         return largest_face
     
     def crop_face(self, frame: np.ndarray, face: Dict, padding: float = 0.2) -> np.ndarray:
-        """
-        Crop face region from frame with optional padding.
-        
-        Args:
-            frame: Original image
-            face: Face dictionary from detect_faces()
-            padding: Padding factor (0.2 = 20% padding on each side)
-            
-        Returns:
-            Cropped face image
-        """
+    
         x, y, w, h = face['box']
         
         # Add padding
@@ -314,15 +200,6 @@ class FaceEstimator:
         return face_crop
     
     def analyze_frame(self, frame: np.ndarray) -> Optional[Dict[str, str]]:
-        """
-        Complete analysis pipeline: detect face and predict demographics.
-        
-        Args:
-            frame: Input image from webcam
-            
-        Returns:
-            Dictionary with 'age_group', 'gender', 'mood' or None if no face detected
-        """
         # Detect faces
         faces = self.detect_faces(frame)
         

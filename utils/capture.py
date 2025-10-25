@@ -1,9 +1,4 @@
-"""
-Webcam Capture Module
-
-Provides WebcamCapture class for handling video capture from system camera
-with error handling and resource management.
-"""
+# Webcam Capture Module
 
 import cv2
 import numpy as np
@@ -11,34 +6,17 @@ from typing import Optional, Tuple
 
 
 class WebcamCapture:
-    """
-    Manages webcam video capture with error handling.
-    
-    Provides methods to:
-    - Open and initialize camera
-    - Read frames safely
-    - Check camera availability
-    - Release resources properly
-    """
-    
+    # Manages webcam video capture with error handling.
     def __init__(self, camera_index: int = 0):
-        """
-        Initialize webcam capture.
         
-        Args:
-            camera_index: Camera device index (default: 0 for primary camera)
-        """
         self.camera_index = camera_index
         self.cap = None
         self.is_opened = False
         
     def open(self) -> bool:
-        """
-        Open the camera device.
+
+        #Open the camera device.
         
-        Returns:
-            True if camera opened successfully, False otherwise
-        """
         try:
             self.cap = cv2.VideoCapture(self.camera_index)
             
@@ -66,14 +44,7 @@ class WebcamCapture:
             return False
     
     def read(self) -> Tuple[bool, Optional[np.ndarray]]:
-        """
-        Read a frame from the camera.
-        
-        Returns:
-            Tuple of (success, frame):
-            - success: True if frame was read successfully
-            - frame: The captured frame as numpy array, or None if failed
-        """
+       
         if not self.is_opened or self.cap is None:
             return False, None
         
@@ -90,28 +61,18 @@ class WebcamCapture:
             return False, None
     
     def is_available(self) -> bool:
-        """
-        Check if camera is available and opened.
         
-        Returns:
-            True if camera is ready to capture, False otherwise
-        """
         return self.is_opened and self.cap is not None and self.cap.isOpened()
     
     def release(self):
-        """Release camera resources."""
+        #Release camera resources
         if self.cap is not None:
             self.cap.release()
             self.is_opened = False
             print(f"✓ Camera {self.camera_index} released")
     
     def get_frame_size(self) -> Optional[Tuple[int, int]]:
-        """
-        Get current frame dimensions.
         
-        Returns:
-            Tuple of (width, height) or None if camera not opened
-        """
         if not self.is_available():
             return None
         
@@ -121,25 +82,17 @@ class WebcamCapture:
         return (width, height)
     
     def __enter__(self):
-        """Context manager entry: open camera."""
+        #Context manager entry: open camera
         self.open()
         return self
     
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit: release camera."""
+        #Context manager exit: release camera
         self.release()
 
 
 def check_camera_availability(camera_index: int = 0) -> bool:
-    """
-    Check if a camera is available without keeping it open.
     
-    Args:
-        camera_index: Camera device index to check
-        
-    Returns:
-        True if camera is available, False otherwise
-    """
     try:
         cap = cv2.VideoCapture(camera_index)
         is_available = cap.isOpened()

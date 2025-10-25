@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+
+#This file use only for testing purpose only
 """
 Quick test script to verify camera window functionality.
 Tests camera access and OpenCV display without running full detection.
